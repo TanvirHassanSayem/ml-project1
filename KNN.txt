@@ -1,0 +1,76 @@
+import pandas as pd
+import numpy as np
+
+import seaborn as sns
+import matplotlib.pylab as plt
+
+credit_card_data = pd.read_csv('creditcard.csv')
+credit_card_data.head()
+credit_card_data.describe().transpose()
+credit_card_data.info()
+credit_card_data.isnull().sum()
+credit_card_data.hist(figsize=(20,20))
+
+import pandas as pd
+import seaborn as sns
+
+# Load your data into df, assuming a CSV file
+df = pd.read_csv("creditcard.csv")
+
+sns.pairplot(df.sample(1000), hue='Class', palette='Set1')
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X = pd.DataFrame(scaler.fit_transform(credit_card_data.drop(["Class"],axis = 1)))
+y = credit_card_data.Class
+X.head()
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.30)
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=1)
+knn.fit(X_train,y_train)
+pred = knn.predict(X_test)
+
+from sklearn.metrics import classification_report,confusion_matrix
+print(confusion_matrix(y_test,pred))
+print(classification_report(y_test,pred))
+
+
+error_rate = []
+
+# Will take some time
+for i in range(1,40):
+
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train,y_train)
+    pred_i = knn.predict(X_test)
+    error_rate.append(np.mean(pred_i != y_test))
+
+plt.figure(figsize=(10,6))
+plt.plot(range(1,40),error_rate,color='blue', linestyle='dashed', marker='o',
+         markerfacecolor='red', markersize=10)
+plt.title('Error Rate vs. K Value')
+plt.xlabel('K')
+plt.ylabel('Error Rate')
+
+
+knn = KNeighborsClassifier(n_neighbors=1)
+
+knn.fit(X_train,y_train)
+pred = knn.predict(X_test)
+
+print('WITH k=1')
+print('\n')
+print(confusion_matrix(y_test,pred))
+print('\n')
+print(classification_report(y_test,pred))
+
+
+from sklearn.metrics import ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+conf_matrix = confusion_matrix(y_test, pred)
+vis = ConfusionMatrixDisplay(confusion_matrix = conf_matrix,display_labels = [True,False])
+vis.plot()
+plt.grid(False)
+plt.show()
