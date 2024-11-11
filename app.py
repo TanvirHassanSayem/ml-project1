@@ -17,13 +17,15 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     
     # Display the DataFrame
-    st.write("DataFrame:")
+    st.subheader("DataFrame:")
     st.dataframe(df)
 
     # Optionally, display some statistics about the DataFrame
-    st.write("Statistics:")
+    st.subheader("Statistics:")
     st.write(df.describe())
-    
+
+    st.markdown("---")  # Add a horizontal rule for separation
+
     st.title("Run Jupyter Notebook in Streamlit")
 
 # Function to run the notebook and return HTML output
@@ -44,7 +46,7 @@ def run_notebook(notebook_path):
 
         # Convert the notebook to HTML
         html_exporter = HTMLExporter()
-        html_exporter.template_name = 'lab'  # Optional: Using JupyterLab template for better style
+        html_exporter.template_name = 'lab'  # Using JupyterLab template for better style
         (body, resources) = html_exporter.from_notebook_node(nb)
 
         return body
@@ -58,6 +60,11 @@ notebook_path = r"C:\Users\Sayem\Desktop\Web_Dev\ml-project1\Credit Card Fraud D
 
 # Run the notebook and get the HTML output
 if st.button("Run Notebook"):
-    notebook_output = run_notebook(notebook_path)
+    with st.spinner("Running the notebook..."):
+        notebook_output = run_notebook(notebook_path)
+    
     if notebook_output:
+        st.subheader("Notebook Output")
         st.components.v1.html(notebook_output, height=800, scrolling=True)
+    else:
+        st.error("Failed to generate notebook output.")
